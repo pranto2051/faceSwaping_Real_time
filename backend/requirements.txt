@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-multipart
+websockets
+insightface
+onnxruntime-gpu
+opencv-python-headless
+numpy
+Pillow
+gfpgan
+tqdm
+requests
+scipy
