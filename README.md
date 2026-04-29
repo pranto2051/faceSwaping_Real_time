@@ -13,36 +13,37 @@ Powered by InsightFace (`inswapper_128.onnx`), GFPGAN/CodeFormer, and FastAPI.
 - **Original Resolution**: Preserves original image quality with no downscaling.
 - **GPU Accelerated**: Full support for NVIDIA CUDA (on Linux/Windows) and Apple Silicon (on Mac).
 
-## Installation & Setup
+## Quick Installation (Copy & Paste)
 
-### 1. Prerequisites
-- **Python 3.10+**
-- **Node.js & npm**
+Follow these steps in order to set up the project from scratch.
 
-### 2. Backend Setup
-Navigate to the backend directory and run these commands:
+### 1. Backend Setup & Libraries
+Open your terminal and run:
 
 ```bash
+# Navigate to backend and create environment
 cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install all required Python libraries
+# Install all required libraries
 pip install fastapi uvicorn python-multipart websockets insightface onnxruntime opencv-python-headless numpy Pillow gfpgan tqdm requests scipy
 ```
 
-#### Required Python Libraries:
-- **fastapi**: Modern, fast (high-performance) web framework.
-- **uvicorn**: ASGI server for production.
-- **insightface**: State-of-the-art face analysis library.
-- **onnxruntime**: High-performance scoring engine for ONNX models.
-- **gfpgan**: Blind face restoration algorithm.
-- **opencv-python-headless**: Computer vision library.
-- **numpy**: Numerical computing.
-- **Pillow**: Image processing.
+### 2. Download AI Models
+The application needs specific models to work. Run these commands to create the folder and download the main swapper model:
+
+```bash
+# Create models directory
+mkdir -p models
+
+# Download inswapper_128.onnx (approx 550MB)
+# Note: If curl is not installed, download manually from InsightFace and place in backend/models/
+curl -L -o models/inswapper_128.onnx https://github.com/facefusion/facefusion-assets/releases/download/models/inswapper_128.onnx
+```
 
 ### 3. Frontend Setup
-Navigate to the frontend directory and run these commands:
+Open a **new terminal tab**, navigate to the project root, and run:
 
 ```bash
 cd frontend
@@ -50,16 +51,18 @@ npm install
 npm run dev
 ```
 
+---
+
 ## Running the Application
 
-### Start Backend
+### Step 1: Start Backend
 ```bash
 cd backend
 source venv/bin/activate
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Start Frontend
+### Step 2: Start Frontend
 ```bash
 cd frontend
 npm run dev
@@ -72,12 +75,12 @@ The application will be available at:
 ---
 
 ## Model Details
-The application will attempt to auto-download models. If it fails, place them in `backend/models/`:
-- `inswapper_128.onnx`: InsightFace face swapper model.
-- `CodeFormer` / `GFPGAN` weights: For face restoration.
-- `buffalo_l`: Face detection and recognition model.
+If you prefer manual downloads, place these in `backend/models/`:
+- `inswapper_128.onnx`: The main face swapping engine.
+- `GFPGANv1.4.pth`: Used for face restoration (automatically downloaded on first run).
+- `buffalo_l`: Detection model (automatically downloaded by InsightFace).
 
 ## Troubleshooting
-- **Mac (Apple Silicon)**: Use `onnxruntime` (which I've included in the install command). It works great with CoreML.
-- **Windows/Linux with NVIDIA GPU**: You may want to install `onnxruntime-gpu` instead of `onnxruntime` for faster processing.
-- **Out of Memory**: High-resolution processing may consume significant VRAM. If it crashes, try lowering the input resolution.
+- **Mac (Apple Silicon)**: Ensure you use `onnxruntime`. The project is optimized for Mac's CoreML.
+- **Windows/Linux GPU**: If you have an NVIDIA GPU, you can run `pip install onnxruntime-gpu` for a massive speed boost.
+- **Out of Memory**: If processing high-res images crashes, try closing other apps to free up VRAM/RAM.
