@@ -1,5 +1,7 @@
 # FaceSwap Studio
 
+![FaceSwap Studio Demo](demo.png)
+
 A production-grade, photorealistic Face Swap Studio web application designed for professional photography studios. 
 Powered by InsightFace (`inswapper_128.onnx`), GFPGAN/CodeFormer, and FastAPI.
 
