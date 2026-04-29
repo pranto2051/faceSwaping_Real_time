@@ -2,12 +2,22 @@ import os
 import uuid
 import json
 import asyncio
+import shutil
+import zipfile
 from typing import List, Optional
+
+import cv2
+import numpy as np
+import uvicorn
 from fastapi import FastAPI, UploadFile, File, Form, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-import shutil
-import zipfile
+from fastapi.staticfiles import StaticFiles
+
+from pipeline.face_swap import swap_face
+from pipeline.restoration import restore_face
+from pipeline.color_match import match_skin_tone
+from pipeline.blending import create_soft_mask, seamless_blend, apply_unsharp_mask
 
 app = FastAPI(title="FaceSwap Studio API")
 
@@ -42,12 +52,6 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-import cv2
-import numpy as np
-from pipeline.face_swap import swap_face
-from pipeline.restoration import restore_face
-from pipeline.color_match import match_skin_tone
-from pipeline.blending import create_soft_mask, seamless_blend, apply_unsharp_mask
 
 # Actual background task for pipeline processing
 async def process_swap_job(job_id: str, source_path: str, target_paths: List[str], settings: dict):
@@ -228,9 +232,7 @@ def download_zip(job_id: str):
                 
     return FileResponse(zip_path, media_type="application/zip", filename="faceswap_results.zip")
 
-from fastapi.staticfiles import StaticFiles
 app.mount("/outputs", StaticFiles(directory=OUTPUT_DIR), name="outputs")
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

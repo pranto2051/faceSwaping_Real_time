@@ -9,40 +9,73 @@ Powered by InsightFace (`inswapper_128.onnx`), GFPGAN/CodeFormer, and FastAPI.
 - **Seamless Blending & Color Matching**: Applies LAB color space transfer and Poisson seamless blending for natural, invisible edges.
 - **Batch Processing**: Swap faces across multiple images at once.
 - **Original Resolution**: Preserves original image quality with no downscaling.
-- **GPU Accelerated**: Full support for NVIDIA CUDA to process high-resolution images rapidly.
+- **GPU Accelerated**: Full support for NVIDIA CUDA (on Linux/Windows) and Apple Silicon (on Mac).
 
-## Setup Instructions
+## Installation & Setup
 
-### Prerequisites
-- Docker and Docker Compose installed.
-- NVIDIA GPU (Recommended) with NVIDIA Container Toolkit for CUDA support.
+### 1. Prerequisites
+- **Python 3.10+**
+- **Node.js & npm**
 
-### 1. GPU Setup
-To enable GPU acceleration in Docker, ensure you have installed the NVIDIA Container Toolkit.
-- **Ubuntu/Debian**:
-  ```bash
-  sudo apt-get install -y nvidia-container-toolkit
-  sudo systemctl restart docker
-  ```
-
-### 2. Model Downloads
-The application will attempt to auto-download the required models on first run. Alternatively, you can download them manually and place them in the `backend/models/` directory:
-- `inswapper_128.onnx`: Download from InsightFace's official release.
-- `CodeFormer` weights: Download from the official CodeFormer repository.
-- `buffalo_l`: Extracted by InsightFace automatically.
-
-### 3. Installation & Running
-Clone this repository and run the application using Docker Compose:
+### 2. Backend Setup
+Navigate to the backend directory and run these commands:
 
 ```bash
-docker-compose up --build
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install all required Python libraries
+pip install fastapi uvicorn python-multipart websockets insightface onnxruntime opencv-python-headless numpy Pillow gfpgan tqdm requests scipy
+```
+
+#### Required Python Libraries:
+- **fastapi**: Modern, fast (high-performance) web framework.
+- **uvicorn**: ASGI server for production.
+- **insightface**: State-of-the-art face analysis library.
+- **onnxruntime**: High-performance scoring engine for ONNX models.
+- **gfpgan**: Blind face restoration algorithm.
+- **opencv-python-headless**: Computer vision library.
+- **numpy**: Numerical computing.
+- **Pillow**: Image processing.
+
+### 3. Frontend Setup
+Navigate to the frontend directory and run these commands:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Running the Application
+
+### Start Backend
+```bash
+cd backend
+source venv/bin/activate
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Start Frontend
+```bash
+cd frontend
+npm run dev
 ```
 
 The application will be available at:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8000
+- **Frontend**: [http://localhost:5173](http://localhost:5173)
+- **Backend API**: [http://localhost:8000](http://localhost:8000)
 
-### 4. Troubleshooting
-- **GPU Not Found**: Ensure you have configured Docker to use the NVIDIA runtime. Check `docker-compose.yml` for the `deploy` configuration.
-- **Models Failing to Download**: If the backend container fails to start due to network issues, download the models manually as described above and place them in `backend/models/`.
-- **Out of Memory**: High-resolution processing may consume significant VRAM. If it crashes, try lowering the input resolution or using CPU fallback.
+---
+
+## Model Details
+The application will attempt to auto-download models. If it fails, place them in `backend/models/`:
+- `inswapper_128.onnx`: InsightFace face swapper model.
+- `CodeFormer` / `GFPGAN` weights: For face restoration.
+- `buffalo_l`: Face detection and recognition model.
+
+## Troubleshooting
+- **Mac (Apple Silicon)**: Use `onnxruntime` (which I've included in the install command). It works great with CoreML.
+- **Windows/Linux with NVIDIA GPU**: You may want to install `onnxruntime-gpu` instead of `onnxruntime` for faster processing.
+- **Out of Memory**: High-resolution processing may consume significant VRAM. If it crashes, try lowering the input resolution.

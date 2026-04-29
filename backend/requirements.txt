@@ -3,7 +3,7 @@ uvicorn
 python-multipart
 websockets
 insightface
-onnxruntime-gpu
+onnxruntime
 opencv-python-headless
 numpy
 Pillow
